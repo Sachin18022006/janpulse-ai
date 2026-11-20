@@ -5,21 +5,6 @@
 
 ---
 
-## 🎨 Unique Civic-Tech Visual Identity
-
-JanPulse AI departs from standard generic AI SaaS purple gradients and dark blue dashboards, using a distinct, human-centric Indian civic-tech design system:
-
-| Role | Color Name | Hex Code | Purpose |
-|---|---|---|---|
-| **Background** | Warm Ivory | `#F8F6F0` | Primary app canvas & background |
-| **Primary** | Terracotta | `#D66A45` | Brand accents, primary buttons, high severity |
-| **Secondary** | Forest Green | `#356B52` | Trust, resolved state, eco & water divisions |
-| **Accent** | Mustard Yellow | `#E5B84B` | Medium priority, attention badges, warnings |
-| **Text** | Charcoal | `#282B27` | High-contrast readable typography |
-| **Secondary Background** | Pale Sage | `#E9EFE7` | Panels, borders, section containers |
-| **Cards** | Pure White | `#FFFFFF` | Rounded cards with warm drop shadows |
-
----
 
 ## 🛠️ Complete Tech Stack
 
