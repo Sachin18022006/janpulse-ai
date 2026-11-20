@@ -9,18 +9,22 @@ import {
   AlertTriangle, 
   ArrowRight, 
   ThumbsUp,
+  Flame,
   Layers,
   Sparkles
 } from 'lucide-react';
 import { complaintAPI } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import LeafletMap from '../components/LeafletMap';
 import SeverityBadge from '../components/SeverityBadge';
 import StatusBadge from '../components/StatusBadge';
 
 export const MapExplorerPage = () => {
+  const { t } = useLanguage();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('map'); // 'map' or 'list'
+  const [showHeatmap, setShowHeatmap] = useState(false);
   
   // Filters
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -83,7 +87,7 @@ export const MapExplorerPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       
-      {/* Header and View Toggle */}
+      {/* Header, View Toggle & Heatmap switch */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E9EFE7] pb-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-forest-800">
@@ -97,31 +101,47 @@ export const MapExplorerPage = () => {
           </p>
         </div>
 
-        {/* View Toggle */}
-        <div className="flex items-center space-x-2 bg-white p-1.5 rounded-2xl border border-[#D5DFD1] shadow-warm self-start">
+        {/* View Toggle + Heatmap Button */}
+        <div className="flex flex-wrap items-center gap-2 self-start">
+          {/* Heatmap Toggle */}
           <button
-            onClick={() => setViewMode('map')}
-            className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              viewMode === 'map'
-                ? 'bg-terracotta text-white shadow-warm'
-                : 'text-charcoal-700 hover:bg-sage/40'
+            onClick={() => setShowHeatmap(!showHeatmap)}
+            className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold border transition-all shadow-warm ${
+              showHeatmap
+                ? 'bg-mustard text-charcoal-900 border-mustard font-extrabold'
+                : 'bg-white text-charcoal-700 border-[#D5DFD1] hover:bg-mustard-50'
             }`}
           >
-            <MapPin className="w-4 h-4" />
-            <span>Interactive Map</span>
+            <Flame className={`w-4 h-4 ${showHeatmap ? 'text-terracotta-700 animate-pulse' : 'text-mustard-600'}`} />
+            <span>{showHeatmap ? '🔥 Heatmap Active' : 'Show Density Heatmap'}</span>
           </button>
 
-          <button
-            onClick={() => setViewMode('list')}
-            className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              viewMode === 'list'
-                ? 'bg-terracotta text-white shadow-warm'
-                : 'text-charcoal-700 hover:bg-sage/40'
-            }`}
-          >
-            <List className="w-4 h-4" />
-            <span>List & Grid View</span>
-          </button>
+          {/* Map vs List Toggle */}
+          <div className="flex items-center space-x-1.5 bg-white p-1 rounded-2xl border border-[#D5DFD1] shadow-warm">
+            <button
+              onClick={() => setViewMode('map')}
+              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                viewMode === 'map'
+                  ? 'bg-terracotta text-white shadow-warm'
+                  : 'text-charcoal-700 hover:bg-sage/40'
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Map</span>
+            </button>
+
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                viewMode === 'list'
+                  ? 'bg-terracotta text-white shadow-warm'
+                  : 'text-charcoal-700 hover:bg-sage/40'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" />
+              <span>List View</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -203,13 +223,14 @@ export const MapExplorerPage = () => {
       {/* Main View Display */}
       {viewMode === 'map' ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Map canvas (takes 2 cols on desktop) */}
+          {/* Map canvas */}
           <div className="lg:col-span-2 space-y-3">
             <LeafletMap
               complaints={complaints}
               center={[12.9716, 77.5946]}
               zoom={12}
               height="600px"
+              showHeatmap={showHeatmap}
             />
 
             {/* Severity Legend */}
@@ -236,7 +257,7 @@ export const MapExplorerPage = () => {
             </div>
           </div>
 
-          {/* Side Feed of Complaints on Map */}
+          {/* Side Feed */}
           <div className="space-y-4 max-h-[660px] overflow-y-auto pr-1">
             <div className="flex items-center justify-between pb-2 border-b border-[#E9EFE7]">
               <span className="text-xs font-bold uppercase text-charcoal-700">

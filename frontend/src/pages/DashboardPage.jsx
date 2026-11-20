@@ -23,7 +23,9 @@ import {
   Building2, 
   Layers, 
   ShieldCheck,
-  Calendar
+  Calendar,
+  FileDown,
+  Printer
 } from 'lucide-react';
 import { dashboardAPI } from '../services/api';
 
@@ -59,20 +61,36 @@ export const DashboardPage = () => {
     loadDashboard();
   }, []);
 
+  const handlePrintAudit = () => {
+    window.print();
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Page Header */}
-      <div className="border-b border-[#E9EFE7] pb-6">
-        <span className="text-xs font-bold uppercase tracking-wider text-terracotta">
-          Open Governance & Accountability
-        </span>
-        <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-charcoal-900 mt-1">
-          Public Transparency & Triage Dashboard
-        </h1>
-        <p className="text-xs sm:text-sm text-charcoal-600 mt-1">
-          Real-time metrics on civic grievance resolution rates, Gemini AI severity categorization, and municipal department responsiveness.
-        </p>
+      {/* Page Header with Export / Print Actions */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E9EFE7] pb-6">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-terracotta">
+            Open Governance & Accountability
+          </span>
+          <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-charcoal-900 mt-1">
+            Public Transparency & Triage Dashboard
+          </h1>
+          <p className="text-xs sm:text-sm text-charcoal-600 mt-1">
+            Real-time metrics on civic grievance resolution rates, Gemini AI severity categorization, and municipal department responsiveness.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2 self-start">
+          <button
+            onClick={handlePrintAudit}
+            className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-bold text-charcoal-700 hover:bg-sage/40 transition-colors shadow-warm"
+          >
+            <Printer className="w-4 h-4 text-forest" />
+            <span>Print Ward Audit Report</span>
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards Strip */}

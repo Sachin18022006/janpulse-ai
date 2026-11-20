@@ -11,9 +11,13 @@ import {
   ArrowRight,
   ShieldAlert,
   Loader2,
-  ThumbsUp
+  Mic,
+  MicOff,
+  Volume2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { useNotification } from '../context/NotificationContext';
 import { complaintAPI } from '../services/api';
 import LeafletMap from '../components/LeafletMap';
 import AIAnalysisCard from '../components/AIAnalysisCard';
@@ -22,6 +26,8 @@ import confetti from 'canvas-confetti';
 
 export const ReportIssuePage = () => {
   const { user, isAuthenticated } = useAuth();
+  const { t, language } = useLanguage();
+  const { sendNotification } = useNotification();
   const navigate = useNavigate();
 
   // Form State
@@ -43,6 +49,9 @@ export const ReportIssuePage = () => {
   const [duplicatesData, setDuplicatesData] = useState(null);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
+  // Speech Recognition / Voice Dictation State
+  const [isListening, setIsListening] = useState(false);
+
   // Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -57,6 +66,50 @@ export const ReportIssuePage = () => {
     'Public Safety',
     'Other',
   ];
+
+  // Speech-to-Text handler
+  const handleVoiceDictation = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('Speech Recognition is not supported by your browser. Please use Google Chrome.');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = language === 'kn' ? 'kn-IN' : language === 'hi' ? 'hi-IN' : 'en-IN';
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setDescription((prev) => (prev ? `${prev} ${transcript}` : transcript));
+      setIsListening(false);
+      if (file) {
+        triggerAIAnalysis(file, `${description} ${transcript}`, category);
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.warn('Speech error:', event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
 
   // Handle Drag & Drop / File Select
   const handleFileChange = (e) => {
@@ -105,7 +158,6 @@ export const ReportIssuePage = () => {
         setAddress(data.display_name);
       }
     } catch (e) {
-      // Fallback
       setAddress(`${lat.toFixed(4)}, ${lon.toFixed(4)}, Bengaluru, Karnataka`);
     }
   };
@@ -200,9 +252,16 @@ export const ReportIssuePage = () => {
       const res = await complaintAPI.create(formData);
 
       if (res.data.success) {
-        // Success!
         setSuccessComplaint(res.data.data);
         setShowDuplicateModal(false);
+
+        // Trigger SMS notification simulation to citizen
+        sendNotification({
+          title: 'Grievance Acknowledged',
+          recipient: user?.phone || '+91 98450 12345 (Aarav Sharma)',
+          message: `Grievance #${res.data.data.complaintId} lodged successfully! AI Severity: ${res.data.data.severity}/10. Dispatched to ${res.data.data.department}.`,
+        });
+
         confetti({
           particleCount: 80,
           spread: 70,
@@ -210,7 +269,6 @@ export const ReportIssuePage = () => {
         });
       }
     } catch (err) {
-      // Check if duplicate complaint detected (HTTP 409)
       if (err.response?.status === 409 && err.response?.data?.duplicateDetected) {
         setDuplicatesData(err.response.data.data);
         setShowDuplicateModal(true);
@@ -230,6 +288,13 @@ export const ReportIssuePage = () => {
       const res = await complaintAPI.upvote(existingId);
       if (res.data.success) {
         setShowDuplicateModal(false);
+
+        sendNotification({
+          title: 'Priority Upvoted',
+          recipient: user?.phone || '+91 98450 12345 (Aarav Sharma)',
+          message: `Your upvote has been registered! Complaint priority escalated in the BBMP engineering dispatch queue.`,
+        });
+
         confetti({
           particleCount: 70,
           spread: 60,
@@ -253,10 +318,10 @@ export const ReportIssuePage = () => {
           Citizen Reporting Portal
         </span>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-charcoal-900 mt-1">
-          Report a Civic Grievance
+          {t('reportIssue')}
         </h1>
         <p className="text-sm text-charcoal-600 mt-1">
-          Upload photo evidence. Our multimodal Gemini AI classifies the defect and performs a 200m spatial proximity triage.
+          Upload photo evidence or dictate verbally. Gemini AI classifies the defect and performs a 200m spatial proximity triage.
         </p>
       </div>
 
@@ -391,22 +456,22 @@ export const ReportIssuePage = () => {
             )}
           </div>
 
-          {/* Section 2: AI Analysis Card (Dynamic preview if triggered) */}
+          {/* Section 2: AI Analysis Card */}
           {(isAnalyzingAI || aiAnalysis) && (
             <div className="space-y-2">
               <AIAnalysisCard analysis={aiAnalysis} isAnalyzing={isAnalyzingAI} />
             </div>
           )}
 
-          {/* Section 3: Grievance Details & Category */}
+          {/* Section 3: Grievance Details & Category + Voice Dictation */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E9EFE7] shadow-warm space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-display font-bold text-lg text-charcoal-900">
-                  2. Issue Details & Category
+                  2. Issue Details & Accessibility
                 </h3>
                 <p className="text-xs text-charcoal-500">
-                  Describe what needs remediation so field supervisors can dispatch appropriate equipment.
+                  Type or click voice dictate to explain the hazard in Kannada, Hindi, or English.
                 </p>
               </div>
               <span className="text-xs font-bold text-terracotta uppercase">Step 2 of 3</span>
@@ -438,7 +503,7 @@ export const ReportIssuePage = () => {
               </div>
             </div>
 
-            {/* Title / Short Headline */}
+            {/* Title */}
             <div className="space-y-1">
               <label className="text-xs font-bold uppercase tracking-wider text-charcoal-700">
                 Grievance Title (Optional)
@@ -452,11 +517,28 @@ export const ReportIssuePage = () => {
               />
             </div>
 
-            {/* Description */}
+            {/* Description + Voice Button */}
             <div className="space-y-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-charcoal-700">
-                Detailed Description *
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wider text-charcoal-700">
+                  Detailed Description *
+                </label>
+
+                {/* Voice Dictate Button */}
+                <button
+                  type="button"
+                  onClick={handleVoiceDictation}
+                  className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all shadow-warm ${
+                    isListening
+                      ? 'bg-red-500 text-white animate-pulse'
+                      : 'bg-forest-100 hover:bg-forest-200 text-forest-800'
+                  }`}
+                >
+                  {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                  <span>{isListening ? t('listening') : t('voiceInput')}</span>
+                </button>
+              </div>
+
               <textarea
                 rows={4}
                 required

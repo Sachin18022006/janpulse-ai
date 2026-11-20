@@ -14,15 +14,19 @@ import {
   ArrowRight,
   Eye,
   Check,
-  RefreshCw
+  RefreshCw,
+  FileDown,
+  Printer
 } from 'lucide-react';
 import { adminAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 import SeverityBadge from '../components/SeverityBadge';
 import StatusBadge from '../components/StatusBadge';
 
 export const AdminDashboardPage = () => {
   const { user, isAdmin } = useAuth();
+  const { sendNotification } = useNotification();
   const navigate = useNavigate();
 
   const [complaints, setComplaints] = useState([]);
@@ -77,7 +81,6 @@ export const AdminDashboardPage = () => {
 
   useEffect(() => {
     if (!isAdmin) {
-      // Redirect if not admin
       navigate('/login');
       return;
     }
@@ -117,6 +120,14 @@ export const AdminDashboardPage = () => {
       const res = await adminAPI.updateStatus(selectedComplaint._id, formData);
       if (res.data.success) {
         setModalOpen(false);
+
+        // Dispatch simulated citizen SMS notification!
+        sendNotification({
+          title: `Status: ${newStatus}`,
+          recipient: selectedComplaint.reporter?.phone || '+91 98450 12345 (Citizen)',
+          message: `Update on Grievance #${selectedComplaint.complaintId}: Status is now [${newStatus}]. Note: "${remarks || 'Field team deployed'}" - BBMP Engineering Directorate.`,
+        });
+
         fetchAdminComplaints();
       }
     } catch (err) {
@@ -145,6 +156,13 @@ export const AdminDashboardPage = () => {
       });
       if (res.data.success) {
         setAssignModalOpen(false);
+
+        sendNotification({
+          title: 'Department Dispatched',
+          recipient: selectedComplaint.reporter?.phone || '+91 98450 12345',
+          message: `Grievance #${selectedComplaint.complaintId} has been assigned to ${assignedDepartment} (${assignedUnit}).`,
+        });
+
         fetchAdminComplaints();
       }
     } catch (err) {
@@ -152,6 +170,33 @@ export const AdminDashboardPage = () => {
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  // Export Ward Audit Report as CSV
+  const handleExportCSV = () => {
+    if (complaints.length === 0) return;
+
+    const headers = ['Complaint ID', 'Title', 'Category', 'Severity', 'Department', 'Status', 'Address', 'Upvotes', 'Date'];
+    const rows = complaints.map(c => [
+      c.complaintId,
+      `"${c.title.replace(/"/g, '""')}"`,
+      c.category,
+      c.severity,
+      `"${c.department}"`,
+      c.status,
+      `"${c.address.replace(/"/g, '""')}"`,
+      c.upvotesCount || 0,
+      new Date(c.createdAt).toLocaleDateString(),
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `BBMP_Ward_Civic_Audit_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const criticalPending = complaints.filter(c => c.severity >= 8 && c.status !== 'Resolved');
@@ -176,13 +221,31 @@ export const AdminDashboardPage = () => {
           </p>
         </div>
 
-        <button
-          onClick={fetchAdminComplaints}
-          className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-bold text-charcoal-700 hover:bg-sage/40 transition-colors shadow-warm self-start"
-        >
-          <RefreshCw className="w-4 h-4 text-forest" />
-          <span>Refresh Data</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-800 text-xs font-bold transition-colors shadow-warm"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Export Ward Audit (CSV)</span>
+          </button>
+
+          <button
+            onClick={() => window.print()}
+            className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-bold text-charcoal-700 hover:bg-sage/40 transition-colors shadow-warm"
+          >
+            <Printer className="w-4 h-4 text-charcoal-600" />
+            <span>Print Report</span>
+          </button>
+
+          <button
+            onClick={fetchAdminComplaints}
+            className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-bold text-charcoal-700 hover:bg-sage/40 transition-colors shadow-warm"
+          >
+            <RefreshCw className="w-4 h-4 text-forest" />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Critical Hazards Alert Banner */}
@@ -240,7 +303,6 @@ export const AdminDashboardPage = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Status selector */}
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
@@ -254,7 +316,6 @@ export const AdminDashboardPage = () => {
             <option value="Resolved">Resolved</option>
           </select>
 
-          {/* Category selector */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -269,7 +330,6 @@ export const AdminDashboardPage = () => {
             <option value="Public Safety">Public Safety</option>
           </select>
 
-          {/* Urgency selector */}
           <select
             value={selectedUrgency}
             onChange={(e) => setSelectedUrgency(e.target.value)}
@@ -424,7 +484,6 @@ export const AdminDashboardPage = () => {
             </div>
 
             <form onSubmit={handleUpdateStatus} className="space-y-4">
-              {/* Status Select */}
               <div className="space-y-1">
                 <label className="text-xs font-bold uppercase tracking-wider text-charcoal-700">
                   Lifecycle Status *
@@ -443,7 +502,6 @@ export const AdminDashboardPage = () => {
                 </select>
               </div>
 
-              {/* Official Remarks */}
               <div className="space-y-1">
                 <label className="text-xs font-bold uppercase tracking-wider text-charcoal-700">
                   Official Municipal Remarks *
@@ -458,7 +516,6 @@ export const AdminDashboardPage = () => {
                 ></textarea>
               </div>
 
-              {/* Resolution Proof Upload */}
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-charcoal-700">
                   Resolution Proof Photograph (Mandatory for Resolved status)
@@ -505,7 +562,6 @@ export const AdminDashboardPage = () => {
                 )}
               </div>
 
-              {/* Actions */}
               <div className="pt-4 flex items-center justify-end space-x-3 border-t border-[#E9EFE7]">
                 <button
                   type="button"
@@ -519,7 +575,7 @@ export const AdminDashboardPage = () => {
                   disabled={isUpdating}
                   className="px-6 py-2.5 rounded-xl bg-terracotta hover:bg-terracotta-600 text-white text-xs font-bold shadow-warm disabled:opacity-50"
                 >
-                  {isUpdating ? 'Saving Update...' : 'Commit Status & Log Timeline'}
+                  {isUpdating ? 'Saving Update...' : 'Commit Status & Send Citizen SMS'}
                 </button>
               </div>
             </form>

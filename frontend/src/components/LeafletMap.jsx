@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import SeverityBadge from './SeverityBadge';
@@ -91,6 +91,7 @@ export const LeafletMap = ({
   selectedPosition = null,
   onSelectPosition = null,
   height = '500px',
+  showHeatmap = false,
 }) => {
   return (
     <div style={{ height, width: '100%' }} className="rounded-2xl overflow-hidden border border-[#D5DFD1] shadow-warm relative z-10">
@@ -114,6 +115,31 @@ export const LeafletMap = ({
             selectedPos={selectedPosition}
           />
         )}
+
+        {/* Hazard Density Heatmap Layer */}
+        {showHeatmap &&
+          !interactivePicker &&
+          complaints.map((item) => {
+            const coords = item.location?.coordinates;
+            if (!coords || coords.length < 2) return null;
+            const lat = coords[1];
+            const lon = coords[0];
+            const sev = item.severity || 5;
+
+            return (
+              <Circle
+                key={`heat-${item._id || item.complaintId}`}
+                center={[lat, lon]}
+                radius={sev >= 8 ? 600 : sev >= 5 ? 400 : 250}
+                pathOptions={{
+                  fillColor: sev >= 9 ? '#D63031' : sev >= 7 ? '#D66A45' : '#E5B84B',
+                  fillOpacity: 0.35,
+                  color: sev >= 9 ? '#D63031' : '#D66A45',
+                  weight: 1.5,
+                }}
+              />
+            );
+          })}
 
         {/* Markers for complaint collection */}
         {!interactivePicker &&

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { 
   AlertCircle, 
   MapPin, 
@@ -12,11 +13,12 @@ import {
   Menu, 
   X,
   Search,
-  Sparkles
+  Languages
 } from 'lucide-react';
 
 export const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { language, switchLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ export const Navbar = () => {
                 </span>
               </div>
               <p className="text-[11px] font-medium text-charcoal-500 tracking-wide uppercase">
-                Transparent Civic Grievance Triage
+                {t('brandSubtitle')}
               </p>
             </div>
           </Link>
@@ -58,7 +60,7 @@ export const Navbar = () => {
                   : 'text-charcoal-700 hover:text-terracotta hover:bg-sage/40'
               }`}
             >
-              Home
+              {t('home')}
             </Link>
 
             <Link
@@ -70,7 +72,7 @@ export const Navbar = () => {
               }`}
             >
               <MapPin className="w-4 h-4 text-forest" />
-              <span>Explore Map</span>
+              <span>{t('exploreMap')}</span>
             </Link>
 
             <Link
@@ -82,7 +84,7 @@ export const Navbar = () => {
               }`}
             >
               <BarChart3 className="w-4 h-4 text-terracotta" />
-              <span>Transparency</span>
+              <span>{t('transparency')}</span>
             </Link>
 
             <Link
@@ -94,7 +96,7 @@ export const Navbar = () => {
               }`}
             >
               <Search className="w-4 h-4 text-charcoal-500" />
-              <span>Track ID</span>
+              <span>{t('trackId')}</span>
             </Link>
 
             {isAdmin && (
@@ -107,19 +109,33 @@ export const Navbar = () => {
                 }`}
               >
                 <ShieldCheck className="w-4 h-4 text-forest" />
-                <span>Admin Triage</span>
+                <span>{t('adminTriage')}</span>
               </Link>
             )}
           </nav>
 
-          {/* Action CTAs */}
+          {/* Action CTAs & Language Switcher */}
           <div className="hidden md:flex items-center space-x-3">
+            {/* Language Selector */}
+            <div className="flex items-center bg-white px-2 py-1 rounded-xl border border-[#D5DFD1] text-xs font-semibold shadow-warm">
+              <Languages className="w-3.5 h-3.5 text-forest mr-1.5" />
+              <select
+                value={language}
+                onChange={(e) => switchLanguage(e.target.value)}
+                className="bg-transparent text-charcoal-800 font-bold focus:outline-none cursor-pointer text-xs"
+              >
+                <option value="en">English</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="hi">हिंदी (Hindi)</option>
+              </select>
+            </div>
+
             <Link
               to="/report"
               className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-terracotta hover:bg-terracotta-600 text-white font-semibold text-sm shadow-warm transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>Report Issue</span>
+              <span>{t('reportIssue')}</span>
             </Link>
 
             {isAuthenticated ? (
@@ -150,7 +166,7 @@ export const Navbar = () => {
                   to="/login"
                   className="px-4 py-2 rounded-xl text-sm font-semibold text-charcoal-700 hover:text-terracotta hover:bg-sage/40 transition-colors"
                 >
-                  Login
+                  {t('login')}
                 </Link>
               </div>
             )}
@@ -158,6 +174,16 @@ export const Navbar = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
+            <select
+              value={language}
+              onChange={(e) => switchLanguage(e.target.value)}
+              className="bg-white border border-[#D5DFD1] rounded-lg px-2 py-1 text-xs font-bold text-charcoal-800"
+            >
+              <option value="en">EN</option>
+              <option value="kn">ಕನ್ನಡ</option>
+              <option value="hi">हिंदी</option>
+            </select>
+
             <Link
               to="/report"
               className="p-2 rounded-xl bg-terracotta text-white shadow-warm"
@@ -182,7 +208,7 @@ export const Navbar = () => {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2.5 rounded-xl text-base font-semibold text-charcoal-800 hover:bg-sage/40"
           >
-            Home
+            {t('home')}
           </Link>
           <Link
             to="/map"
@@ -190,7 +216,7 @@ export const Navbar = () => {
             className="flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base font-semibold text-charcoal-800 hover:bg-sage/40"
           >
             <MapPin className="w-5 h-5 text-forest" />
-            <span>Explore City Map</span>
+            <span>{t('exploreMap')}</span>
           </Link>
           <Link
             to="/dashboard"
@@ -198,7 +224,7 @@ export const Navbar = () => {
             className="flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base font-semibold text-charcoal-800 hover:bg-sage/40"
           >
             <BarChart3 className="w-5 h-5 text-terracotta" />
-            <span>Public Transparency</span>
+            <span>{t('transparency')}</span>
           </Link>
           <Link
             to="/track"
@@ -206,7 +232,7 @@ export const Navbar = () => {
             className="flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base font-semibold text-charcoal-800 hover:bg-sage/40"
           >
             <Search className="w-5 h-5 text-charcoal-500" />
-            <span>Track Grievance ID</span>
+            <span>{t('trackId')}</span>
           </Link>
 
           {isAdmin && (
@@ -216,7 +242,7 @@ export const Navbar = () => {
               className="flex items-center space-x-2 px-3 py-2.5 rounded-xl text-base font-semibold text-forest-700 bg-forest-50"
             >
               <ShieldCheck className="w-5 h-5 text-forest" />
-              <span>Admin Triage Room</span>
+              <span>{t('adminTriage')}</span>
             </Link>
           )}
 
@@ -229,7 +255,7 @@ export const Navbar = () => {
                   className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-base font-semibold text-charcoal-800 bg-sage/30"
                 >
                   <User className="w-5 h-5 text-forest" />
-                  <span>My Profile ({user?.name})</span>
+                  <span>{t('myProfile')} ({user?.name})</span>
                 </Link>
                 <button
                   onClick={() => {
@@ -239,7 +265,7 @@ export const Navbar = () => {
                   className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-base font-semibold text-terracotta hover:bg-terracotta-50 text-left"
                 >
                   <LogOut className="w-5 h-5" />
-                  <span>Logout</span>
+                  <span>{t('logout')}</span>
                 </button>
               </>
             ) : (
@@ -249,7 +275,7 @@ export const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-center py-2.5 px-4 rounded-xl border border-charcoal-300 font-semibold text-charcoal-800"
                 >
-                  Login
+                  {t('login')}
                 </Link>
                 <Link
                   to="/register"
