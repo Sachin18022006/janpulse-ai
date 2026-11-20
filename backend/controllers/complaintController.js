@@ -133,14 +133,18 @@ export const createComplaint = async (req, res) => {
           const filename = `civic-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(req.file.originalname)}`;
           const filepath = path.join(__dirname, '../uploads', filename);
           fs.writeFileSync(filepath, req.file.buffer);
-          imageUrl = `/uploads/${filename}`;
+          const host = req.get('host');
+          const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+          imageUrl = `${protocol}://${host}/uploads/${filename}`;
         }
       } catch (uploadErr) {
         console.warn('Cloudinary upload fallback to local storage:', uploadErr.message);
         const filename = `civic-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(req.file.originalname)}`;
         const filepath = path.join(__dirname, '../uploads', filename);
         fs.writeFileSync(filepath, req.file.buffer);
-        imageUrl = `/uploads/${filename}`;
+        const host = req.get('host');
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+        imageUrl = `${protocol}://${host}/uploads/${filename}`;
       }
     } else if (req.body.imageUrl) {
       imageUrl = req.body.imageUrl;

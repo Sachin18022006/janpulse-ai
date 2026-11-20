@@ -44,6 +44,25 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+// Route aliases without /api prefix for maximum deployment flexibility
+app.use('/auth', authRoutes);
+app.use('/users', authRoutes);
+app.use('/complaints', complaintRoutes);
+app.use('/ai', aiRoutes);
+app.use('/admin', adminRoutes);
+app.use('/dashboard', dashboardRoutes);
+
+// Root health check endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    app: 'JanPulse AI Backend',
+    version: '1.0.0',
+    message: 'Backend is active and serving civic grievance requests.',
+    endpoints: ['/api/health', '/api/auth/login', '/api/complaints', '/api/dashboard/stats'],
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
