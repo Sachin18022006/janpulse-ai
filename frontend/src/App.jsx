@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import HackathonDemoBar from './components/HackathonDemoBar';
-import HackathonPitchModal from './components/HackathonPitchModal';
 import LandingPage from './pages/LandingPage';
 import ReportIssuePage from './pages/ReportIssuePage';
 import MapExplorerPage from './pages/MapExplorerPage';
@@ -16,10 +14,8 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 
 export const App = () => {
-  const [pitchOpen, setPitchOpen] = useState(false);
-
   return (
-    <div className="min-h-screen flex flex-col bg-ivory text-charcoal font-sans antialiased relative pb-16">
+    <div className="min-h-screen flex flex-col bg-ivory text-charcoal font-sans antialiased">
       <Navbar />
       
       <main className="flex-grow">
@@ -39,12 +35,6 @@ export const App = () => {
       </main>
 
       <Footer />
-
-      {/* Persistent Floating Hackathon Bar for Judges & Live Demonstrations */}
-      <HackathonDemoBar onOpenPitch={() => setPitchOpen(true)} />
-
-      {/* 3-Minute Presentation Deck & Architecture Modal */}
-      <HackathonPitchModal isOpen={pitchOpen} onClose={() => setPitchOpen(false)} />
     </div>
   );
 };
