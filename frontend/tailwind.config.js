@@ -1,0 +1,91 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        ivory: {
+          DEFAULT: '#F8F6F0',
+          50: '#FDFCF9',
+          100: '#F8F6F0',
+          200: '#F0ECE0',
+          300: '#E4DCB8',
+        },
+        terracotta: {
+          DEFAULT: '#D66A45',
+          50: '#FDF5F2',
+          100: '#FBE8E1',
+          200: '#F6D0C2',
+          300: '#EEB19D',
+          400: '#E28A6D',
+          500: '#D66A45',
+          600: '#BF522D',
+          700: '#9B3F21',
+          800: '#79331B',
+          900: '#4D1F0F',
+        },
+        forest: {
+          DEFAULT: '#356B52',
+          50: '#F3F8F5',
+          100: '#E5EFE9',
+          200: '#C7DFD1',
+          300: '#9ECAAF',
+          400: '#69AB85',
+          500: '#356B52',
+          600: '#2C5A44',
+          700: '#234736',
+          800: '#1B3528',
+          900: '#11221A',
+        },
+        mustard: {
+          DEFAULT: '#E5B84B',
+          50: '#FDFBF4',
+          100: '#FBF4DE',
+          200: '#F6E6B7',
+          300: '#EFCF85',
+          400: '#E5B84B',
+          500: '#C7982B',
+          600: '#A4781A',
+          700: '#7E5A12',
+          800: '#5A3E0C',
+        },
+        charcoal: {
+          DEFAULT: '#282B27',
+          50: '#F6F6F5',
+          100: '#E7E8E6',
+          200: '#CFD1CE',
+          300: '#A9ACA7',
+          400: '#7C8079',
+          500: '#545851',
+          600: '#3E423C',
+          700: '#282B27',
+          800: '#1C1E1B',
+          900: '#0E100E',
+        },
+        sage: {
+          DEFAULT: '#E9EFE7',
+          50: '#FAFCFA',
+          100: '#F4F7F2',
+          200: '#E9EFE7',
+          300: '#D5DFD1',
+          400: '#B8C7B2',
+          500: '#96A88F',
+          600: '#73856D',
+        }
+      },
+      fontFamily: {
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
+      },
+      boxShadow: {
+        'warm': '0 4px 20px -2px rgba(40, 43, 39, 0.06), 0 2px 6px -1px rgba(40, 43, 39, 0.04)',
+        'warm-lg': '0 10px 30px -4px rgba(40, 43, 39, 0.08), 0 4px 12px -2px rgba(40, 43, 39, 0.05)',
+        'warm-xl': '0 20px 40px -6px rgba(40, 43, 39, 0.12), 0 8px 16px -3px rgba(40, 43, 39, 0.06)',
+      }
+    },
+  },
+  plugins: [],
+}
