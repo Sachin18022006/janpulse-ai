@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   UploadCloud, 
   MapPin, 
@@ -13,7 +13,8 @@ import {
   Loader2,
   Mic,
   MicOff,
-  Volume2
+  Flame,
+  Zap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -29,6 +30,7 @@ export const ReportIssuePage = () => {
   const { t, language } = useLanguage();
   const { sendNotification } = useNotification();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Form State
   const [file, setFile] = useState(null);
@@ -67,6 +69,65 @@ export const ReportIssuePage = () => {
     'Other',
   ];
 
+  // 1-Click Quick Scenarios for Hackathon Judges
+  const sampleScenarios = [
+    {
+      label: '🛣️ Pothole (Indiranagar - Triggers 200m Duplicate)',
+      title: 'Crater Pothole on 100ft Road',
+      category: 'Road Damage',
+      description: 'Deep hazardous crater pothole opposite Sony Center on 100 Feet Road causing vehicle skidding during rainfall.',
+      coords: [12.9719, 77.6406],
+      address: '100 Feet Rd, Indiranagar, Bengaluru',
+      img: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=800&auto=format&fit=crop&q=80',
+    },
+    {
+      label: '🗑️ Garbage Heap (HSR Sector 2)',
+      title: 'Commercial Waste Dump at 24th Main',
+      category: 'Garbage',
+      description: 'Heavy unsegregated plastic and organic commercial waste pile overflowing near park entrance.',
+      coords: [12.9116, 77.6499],
+      address: '24th Main Rd, Sector 2, HSR Layout, Bengaluru',
+      img: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80',
+    },
+    {
+      label: '💧 Pipeline Burst (Malleshwaram)',
+      title: 'Potable Water Pipeline Rupture',
+      category: 'Water Leakage',
+      description: 'High pressure drinking water pipe burst flooding road and causing severe loss of potable water.',
+      coords: [12.9988, 77.5702],
+      address: '10th Cross Rd, Malleshwaram, Bengaluru',
+      img: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=800&auto=format&fit=crop&q=80',
+    },
+    {
+      label: '💡 Dark Streetlights (MG Road)',
+      title: 'Series of 6 Non-functional LED Fixtures',
+      category: 'Streetlight',
+      description: 'Pedestrian boulevard corridor completely dark between Trinity Circle and metro station.',
+      coords: [12.9756, 77.6074],
+      address: 'Mahatma Gandhi Rd, Bengaluru',
+      img: 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=800&auto=format&fit=crop&q=80',
+    },
+  ];
+
+  const loadScenario = (sc) => {
+    setTitle(sc.title);
+    setCategory(sc.category);
+    setDescription(sc.description);
+    setSelectedPosition(sc.coords);
+    setAddress(sc.address);
+    setPreviewUrl(sc.img);
+    setFile(null); // URL based
+    triggerAIAnalysis(null, sc.description, sc.category);
+  };
+
+  // Check query params for quick scenario load (e.g. from Hackathon Demo Bar)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('scenario') === 'pothole') {
+      loadScenario(sampleScenarios[0]);
+    }
+  }, [location.search]);
+
   // Speech-to-Text handler
   const handleVoiceDictation = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -94,7 +155,7 @@ export const ReportIssuePage = () => {
       const transcript = event.results[0][0].transcript;
       setDescription((prev) => (prev ? `${prev} ${transcript}` : transcript));
       setIsListening(false);
-      if (file) {
+      if (file || previewUrl) {
         triggerAIAnalysis(file, `${description} ${transcript}`, category);
       }
     };
@@ -137,7 +198,6 @@ export const ReportIssuePage = () => {
     setPreviewUrl(objectUrl);
     setErrorMessage('');
 
-    // Trigger instant AI analysis preview with Gemini
     triggerAIAnalysis(selectedFile, description, category);
   };
 
@@ -147,7 +207,6 @@ export const ReportIssuePage = () => {
     setAiAnalysis(null);
   };
 
-  // Reverse Geocode coordinates to human street address using OpenStreetMap Nominatim
   const reverseGeocode = async (lat, lon) => {
     try {
       const response = await fetch(
@@ -162,13 +221,11 @@ export const ReportIssuePage = () => {
     }
   };
 
-  // Handle map click
   const handleMapPinSelect = (lat, lon) => {
     setSelectedPosition([lat, lon]);
     reverseGeocode(lat, lon);
   };
 
-  // Browser Geolocation
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       setErrorMessage('Geolocation is not supported by your browser.');
@@ -192,13 +249,14 @@ export const ReportIssuePage = () => {
     );
   };
 
-  // Trigger Gemini AI Pre-analysis
   const triggerAIAnalysis = async (imageFile, desc, cat) => {
     setIsAnalyzingAI(true);
     try {
       const formData = new FormData();
       if (imageFile) {
         formData.append('image', imageFile);
+      } else if (previewUrl) {
+        formData.append('imageUrl', previewUrl);
       }
       formData.append('description', desc || 'Road hazard or civic problem in Bengaluru');
       formData.append('category', cat || category);
@@ -217,7 +275,6 @@ export const ReportIssuePage = () => {
     }
   };
 
-  // Form Submission
   const handleSubmit = async (e, forceNewComplaint = false) => {
     if (e) e.preventDefault();
 
@@ -247,6 +304,8 @@ export const ReportIssuePage = () => {
 
       if (file) {
         formData.append('image', file);
+      } else if (previewUrl) {
+        formData.append('imageUrl', previewUrl);
       }
 
       const res = await complaintAPI.create(formData);
@@ -255,7 +314,6 @@ export const ReportIssuePage = () => {
         setSuccessComplaint(res.data.data);
         setShowDuplicateModal(false);
 
-        // Trigger SMS notification simulation to citizen
         sendNotification({
           title: 'Grievance Acknowledged',
           recipient: user?.phone || '+91 98450 12345 (Aarav Sharma)',
@@ -280,7 +338,6 @@ export const ReportIssuePage = () => {
     }
   };
 
-  // Handle upvoting existing complaint when duplicate is detected
   const handleUpvoteExisting = async (existingId) => {
     if (!existingId) return;
     setIsSubmitting(true);
@@ -323,6 +380,27 @@ export const ReportIssuePage = () => {
         <p className="text-sm text-charcoal-600 mt-1">
           Upload photo evidence or dictate verbally. Gemini AI classifies the defect and performs a 200m spatial proximity triage.
         </p>
+      </div>
+
+      {/* ⚡ HACKATHON QUICK TEST SCENARIOS BAR */}
+      <div className="p-4 rounded-3xl bg-ivory-100 border-2 border-mustard-300 shadow-warm space-y-2.5">
+        <div className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-charcoal-800">
+          <Zap className="w-4 h-4 text-mustard-600" />
+          <span>Judges 1-Click Test Scenarios (Click to auto-populate photo & GPS):</span>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {sampleScenarios.map((sc, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => loadScenario(sc)}
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-terracotta hover:text-white border border-[#D5DFD1] text-xs font-semibold text-charcoal-800 shadow-warm transition-all"
+            >
+              {sc.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Success View */}
@@ -489,7 +567,7 @@ export const ReportIssuePage = () => {
                     type="button"
                     onClick={() => {
                       setCategory(cat);
-                      if (file) triggerAIAnalysis(file, description, cat);
+                      if (file || previewUrl) triggerAIAnalysis(file, description, cat);
                     }}
                     className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all ${
                       category === cat
