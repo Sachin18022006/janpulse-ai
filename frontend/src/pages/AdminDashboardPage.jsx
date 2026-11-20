@@ -20,12 +20,14 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNotification } from '../context/NotificationContext';
 import SeverityBadge from '../components/SeverityBadge';
 import StatusBadge from '../components/StatusBadge';
 
 export const AdminDashboardPage = () => {
   const { user, isAdmin } = useAuth();
+  const { t } = useLanguage();
   const { sendNotification } = useNotification();
   const navigate = useNavigate();
 
@@ -121,7 +123,6 @@ export const AdminDashboardPage = () => {
       if (res.data.success) {
         setModalOpen(false);
 
-        // Dispatch simulated citizen SMS notification!
         sendNotification({
           title: `Status: ${newStatus}`,
           recipient: selectedComplaint.reporter?.phone || '+91 98450 12345 (Citizen)',
@@ -172,7 +173,6 @@ export const AdminDashboardPage = () => {
     }
   };
 
-  // Export Ward Audit Report as CSV
   const handleExportCSV = () => {
     if (complaints.length === 0) return;
 
@@ -210,11 +210,11 @@ export const AdminDashboardPage = () => {
           <div className="flex items-center space-x-2 text-forest-800">
             <ShieldCheck className="w-5 h-5" />
             <span className="text-xs font-bold uppercase tracking-wider">
-              Municipal Command & Dispatch
+              {t('adminTag')}
             </span>
           </div>
           <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-charcoal-900 mt-1">
-            Grievance Triage & Resolution Room
+            {t('adminTitle')}
           </h1>
           <p className="text-xs sm:text-sm text-charcoal-600 mt-1">
             Logged in as <strong>{user?.name}</strong> • {user?.department || 'BBMP Central Authority'}
@@ -227,7 +227,7 @@ export const AdminDashboardPage = () => {
             className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-800 text-xs font-bold transition-colors shadow-warm"
           >
             <FileDown className="w-4 h-4" />
-            <span>Export Ward Audit (CSV)</span>
+            <span>{t('exportCsvBtn')}</span>
           </button>
 
           <button
@@ -243,7 +243,7 @@ export const AdminDashboardPage = () => {
             className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-bold text-charcoal-700 hover:bg-sage/40 transition-colors shadow-warm"
           >
             <RefreshCw className="w-4 h-4 text-forest" />
-            <span>Refresh</span>
+            <span>{t('refreshData')}</span>
           </button>
         </div>
       </div>
@@ -255,10 +255,10 @@ export const AdminDashboardPage = () => {
             <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 animate-bounce" />
             <div>
               <h3 className="font-display font-bold text-base text-red-900">
-                Action Required: {criticalPending.length} Unresolved Critical Hazards Flagged
+                {t('criticalHazardsBanner')} ({criticalPending.length})
               </h3>
               <p className="text-xs text-red-700">
-                AI assigned severity ≥ 8 indicating immediate danger to citizen safety or critical infrastructure failure.
+                {t('criticalHazardsSub')}
               </p>
             </div>
           </div>
@@ -277,7 +277,7 @@ export const AdminDashboardPage = () => {
                     onClick={() => openStatusModal(item)}
                     className="text-[11px] font-bold text-red-700 hover:underline"
                   >
-                    Triage Now →
+                    {t('triageNow')}
                   </button>
                 </div>
               </div>
@@ -296,7 +296,7 @@ export const AdminDashboardPage = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && fetchAdminComplaints()}
-              placeholder="Search by ID, title, street address..."
+              placeholder={t('searchMapPlaceholder')}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#D5DFD1] bg-ivory-50 text-xs sm:text-sm text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             />
           </div>
@@ -308,12 +308,12 @@ export const AdminDashboardPage = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="px-3 py-2.5 rounded-xl border border-[#D5DFD1] bg-ivory-50 text-xs font-semibold text-charcoal-800"
           >
-            <option value="All">All Statuses</option>
-            <option value="Submitted">Submitted</option>
-            <option value="AI Analyzed">AI Analyzed</option>
-            <option value="Assigned">Assigned</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
+            <option value="All">{t('allStatuses')}</option>
+            <option value="Submitted">{t('Submitted')}</option>
+            <option value="AI Analyzed">{t('AI Analyzed')}</option>
+            <option value="Assigned">{t('Assigned')}</option>
+            <option value="In Progress">{t('In Progress')}</option>
+            <option value="Resolved">{t('Resolved')}</option>
           </select>
 
           <select
@@ -321,13 +321,13 @@ export const AdminDashboardPage = () => {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-3 py-2.5 rounded-xl border border-[#D5DFD1] bg-ivory-50 text-xs font-semibold text-charcoal-800"
           >
-            <option value="All">All Categories</option>
-            <option value="Road Damage">Road Damage</option>
-            <option value="Garbage">Garbage</option>
-            <option value="Streetlight">Streetlight</option>
-            <option value="Water Leakage">Water Leakage</option>
-            <option value="Drainage">Drainage</option>
-            <option value="Public Safety">Public Safety</option>
+            <option value="All">{t('allCategories')}</option>
+            <option value="Road Damage">{t('Road Damage')}</option>
+            <option value="Garbage">{t('Garbage')}</option>
+            <option value="Streetlight">{t('Streetlight')}</option>
+            <option value="Water Leakage">{t('Water Leakage')}</option>
+            <option value="Drainage">{t('Drainage')}</option>
+            <option value="Public Safety">{t('Public Safety')}</option>
           </select>
 
           <select
@@ -336,10 +336,10 @@ export const AdminDashboardPage = () => {
             className="px-3 py-2.5 rounded-xl border border-[#D5DFD1] bg-ivory-50 text-xs font-semibold text-charcoal-800"
           >
             <option value="All">All Urgencies</option>
-            <option value="Critical">Critical</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
+            <option value="Critical">{t('critical')}</option>
+            <option value="High">{t('high')}</option>
+            <option value="Medium">{t('medium')}</option>
+            <option value="Low">{t('low')}</option>
           </select>
         </div>
       </div>
@@ -368,7 +368,6 @@ export const AdminDashboardPage = () => {
               ) : (
                 complaints.map((item) => (
                   <tr key={item._id} className="hover:bg-ivory-50/70 transition-colors">
-                    {/* ID & Photo */}
                     <td className="px-5 py-4">
                       <div className="flex items-center space-x-3">
                         <img
@@ -390,11 +389,10 @@ export const AdminDashboardPage = () => {
                       </div>
                     </td>
 
-                    {/* Category & Location */}
                     <td className="px-5 py-4">
                       <div className="space-y-0.5">
                         <span className="font-bold text-xs text-forest-800 block">
-                          {item.category}
+                          {t(item.category) || item.category}
                         </span>
                         <span className="text-[11px] text-charcoal-500 truncate max-w-[200px] block">
                           {item.address}
@@ -402,12 +400,10 @@ export const AdminDashboardPage = () => {
                       </div>
                     </td>
 
-                    {/* Severity */}
                     <td className="px-5 py-4">
                       <SeverityBadge severity={item.severity} size="sm" />
                     </td>
 
-                    {/* Department */}
                     <td className="px-5 py-4">
                       <div className="space-y-0.5">
                         <span className="font-medium text-charcoal-800 block">
@@ -419,27 +415,24 @@ export const AdminDashboardPage = () => {
                       </div>
                     </td>
 
-                    {/* Status */}
                     <td className="px-5 py-4">
                       <StatusBadge status={item.status} size="sm" />
                     </td>
 
-                    {/* Actions */}
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <button
                           onClick={() => openAssignModal(item)}
                           className="px-2.5 py-1.5 rounded-lg border border-[#D5DFD1] text-xs font-semibold hover:bg-sage/40 text-charcoal-700"
-                          title="Assign Division"
                         >
-                          Assign
+                          {t('assignBtn')}
                         </button>
 
                         <button
                           onClick={() => openStatusModal(item)}
                           className="px-3 py-1.5 rounded-lg bg-terracotta hover:bg-terracotta-600 text-white text-xs font-bold shadow-warm"
                         >
-                          Update Status
+                          {t('updateStatusBtn')}
                         </button>
 
                         <Link
@@ -459,7 +452,7 @@ export const AdminDashboardPage = () => {
         </div>
       </div>
 
-      {/* STATUS UPDATE & RESOLUTION PROOF MODAL */}
+      {/* STATUS UPDATE MODAL */}
       {modalOpen && selectedComplaint && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-warm-xl border border-terracotta-200 space-y-6 relative max-h-[90vh] overflow-y-auto">
@@ -476,7 +469,7 @@ export const AdminDashboardPage = () => {
                 #{selectedComplaint.complaintId}
               </span>
               <h3 className="font-display font-extrabold text-xl text-charcoal-900 mt-0.5">
-                Update Complaint Status & Resolution
+                {t('updateStatusBtn')}
               </h3>
               <p className="text-xs text-charcoal-500">
                 {selectedComplaint.title}
@@ -493,12 +486,12 @@ export const AdminDashboardPage = () => {
                   onChange={(e) => setNewStatus(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-[#D5DFD1] bg-ivory-50 text-sm font-semibold text-charcoal-800 focus:outline-none focus:ring-2 focus:ring-terracotta/30"
                 >
-                  <option value="Submitted">Submitted</option>
-                  <option value="AI Analyzed">AI Analyzed</option>
-                  <option value="Verified">Verified by Authority</option>
-                  <option value="Assigned">Assigned to Field Unit</option>
-                  <option value="In Progress">In Progress (Field Work Ongoing)</option>
-                  <option value="Resolved">Resolved (Remediation Complete)</option>
+                  <option value="Submitted">{t('Submitted')}</option>
+                  <option value="AI Analyzed">{t('AI Analyzed')}</option>
+                  <option value="Verified">{t('Verified')}</option>
+                  <option value="Assigned">{t('Assigned')}</option>
+                  <option value="In Progress">{t('In Progress')}</option>
+                  <option value="Resolved">{t('Resolved')}</option>
                 </select>
               </div>
 
@@ -600,7 +593,7 @@ export const AdminDashboardPage = () => {
                 #{selectedComplaint.complaintId}
               </span>
               <h3 className="font-display font-extrabold text-xl text-charcoal-900 mt-0.5">
-                Assign Municipal Department
+                {t('assignBtn')}
               </h3>
               <p className="text-xs text-charcoal-500">
                 Route this grievance to the authorized civic engineering division

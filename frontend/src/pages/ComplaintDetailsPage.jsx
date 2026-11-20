@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { complaintAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import SeverityBadge from '../components/SeverityBadge';
 import StatusBadge from '../components/StatusBadge';
 import TimelineView from '../components/TimelineView';
@@ -27,6 +28,7 @@ import confetti from 'canvas-confetti';
 export const ComplaintDetailsPage = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +119,7 @@ export const ComplaintDetailsPage = () => {
           className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-terracotta text-white font-bold text-sm shadow-warm"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Return to Live Map</span>
+          <span>{t('exploreLiveMap')}</span>
         </Link>
       </div>
     );
@@ -135,7 +137,7 @@ export const ComplaintDetailsPage = () => {
           className="inline-flex items-center space-x-2 text-xs font-bold text-charcoal-600 hover:text-terracotta transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Live City Map</span>
+          <span>{t('exploreMap')}</span>
         </Link>
 
         <div className="flex items-center space-x-3">
@@ -144,7 +146,7 @@ export const ComplaintDetailsPage = () => {
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-semibold text-charcoal-700 hover:bg-ivory-100 transition-colors shadow-warm"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-forest" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Link Copied!' : 'Share Grievance'}</span>
+            <span>{copied ? t('linkCopied') : t('share')}</span>
           </button>
         </div>
       </div>
@@ -174,17 +176,13 @@ export const ComplaintDetailsPage = () => {
               <span className="flex items-center space-x-1">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>
-                  Reported on {new Date(complaint.createdAt).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+                  {new Date(complaint.createdAt).toLocaleDateString()}
                 </span>
               </span>
               <span>•</span>
               <span className="flex items-center space-x-1">
                 <User className="w-3.5 h-3.5" />
-                <span>By {complaint.reporterName || 'Citizen'}</span>
+                <span>{complaint.reporterName || 'Citizen'}</span>
               </span>
             </div>
           </div>
@@ -232,12 +230,12 @@ export const ComplaintDetailsPage = () => {
             </div>
           </div>
 
-          {/* Resolution Proof Photo (or status placeholder) */}
+          {/* Resolution Proof Photo */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-charcoal-700">
               <span>Municipal Resolution Proof:</span>
               <span className={complaint.status === 'Resolved' ? 'text-forest-700' : 'text-charcoal-500'}>
-                {complaint.status === 'Resolved' ? 'Verified Fixed' : 'Pending Verification'}
+                {complaint.status === 'Resolved' ? t('Resolved') : 'Pending Verification'}
               </span>
             </div>
             {complaint.resolutionProofUrl ? (
@@ -305,7 +303,7 @@ export const ComplaintDetailsPage = () => {
         }}
       />
 
-      {/* Two Column Section: Location Map + Timeline */}
+      {/* Location Map + Timeline */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Location Mini Map */}

@@ -1,14 +1,17 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import { CheckCircle2, Clock, Eye, AlertCircle, Wrench, ShieldCheck, ChevronRight } from 'lucide-react';
 
 export const TimelineView = ({ timeline = [], currentStatus = 'Submitted' }) => {
+  const { t } = useLanguage();
+
   const allStages = [
-    { key: 'Submitted', label: 'Submitted', desc: 'Complaint registered by citizen' },
-    { key: 'AI Analyzed', label: 'AI Analyzed', desc: 'Gemini Flash triage & scoring' },
-    { key: 'Verified', label: 'Verified', desc: 'Reviewed by municipal desk' },
-    { key: 'Assigned', label: 'Assigned', desc: 'Dispatched to ward engineering unit' },
-    { key: 'In Progress', label: 'In Progress', desc: 'Field repair works ongoing' },
-    { key: 'Resolved', label: 'Resolved', desc: 'Remediation completed & verified' },
+    { key: 'Submitted', label: t('Submitted'), desc: 'Complaint registered by citizen' },
+    { key: 'AI Analyzed', label: t('AI Analyzed'), desc: 'Gemini Flash triage & scoring' },
+    { key: 'Verified', label: t('Verified'), desc: 'Reviewed by municipal desk' },
+    { key: 'Assigned', label: t('Assigned'), desc: 'Dispatched to ward engineering unit' },
+    { key: 'In Progress', label: t('In Progress'), desc: 'Field repair works ongoing' },
+    { key: 'Resolved', label: t('Resolved'), desc: 'Remediation completed & verified' },
   ];
 
   const currentStageIndex = allStages.findIndex(s => s.key === currentStatus);
@@ -71,7 +74,7 @@ export const TimelineView = ({ timeline = [], currentStatus = 'Submitted' }) => 
                 <div className="bg-ivory-100 rounded-xl p-3.5 border border-[#E9EFE7] hover:border-terracotta-200 transition-colors">
                   <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
                     <span className="font-bold text-xs text-charcoal-800">
-                      {item.title || item.status}
+                      {item.title || t(item.status) || item.status}
                     </span>
                     <span className="text-[11px] text-charcoal-500">
                       {new Date(item.timestamp).toLocaleString('en-IN', {

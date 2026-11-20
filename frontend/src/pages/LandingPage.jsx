@@ -17,10 +17,12 @@ import {
   Activity
 } from 'lucide-react';
 import { complaintAPI, dashboardAPI } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import SeverityBadge from '../components/SeverityBadge';
 import StatusBadge from '../components/StatusBadge';
 
 export const LandingPage = () => {
+  const { t } = useLanguage();
   const [recentComplaints, setRecentComplaints] = useState([]);
   const [stats, setStats] = useState({
     totalComplaints: 28,
@@ -55,12 +57,12 @@ export const LandingPage = () => {
   }, []);
 
   const categories = [
-    { name: 'Road Damage', icon: '🛣️', desc: 'Potholes, broken asphalt, craters', color: 'bg-terracotta-50 text-terracotta-700' },
-    { name: 'Garbage', icon: '🗑️', desc: 'Illegal dumping, overflowing bins', color: 'bg-mustard-50 text-mustard-800' },
-    { name: 'Streetlight', icon: '💡', desc: 'Dark stretches, broken fixtures', color: 'bg-amber-50 text-amber-800' },
-    { name: 'Water Leakage', icon: '💧', desc: 'Pipeline bursts, clean water wastage', color: 'bg-forest-50 text-forest-800' },
-    { name: 'Drainage', icon: '🚰', desc: 'Open storm drains, clogged sewers', color: 'bg-emerald-50 text-emerald-800' },
-    { name: 'Public Safety', icon: '⚠️', desc: 'Exposed live cables, structural risks', color: 'bg-red-50 text-red-800' },
+    { key: 'Road Damage', icon: '🛣️', desc: 'Potholes, broken asphalt, craters', color: 'bg-terracotta-50 text-terracotta-700' },
+    { key: 'Garbage', icon: '🗑️', desc: 'Illegal dumping, overflowing bins', color: 'bg-mustard-50 text-mustard-800' },
+    { key: 'Streetlight', icon: '💡', desc: 'Dark stretches, broken fixtures', color: 'bg-amber-50 text-amber-800' },
+    { key: 'Water Leakage', icon: '💧', desc: 'Pipeline bursts, clean water wastage', color: 'bg-forest-50 text-forest-800' },
+    { key: 'Drainage', icon: '🚰', desc: 'Open storm drains, clogged sewers', color: 'bg-emerald-50 text-emerald-800' },
+    { key: 'Public Safety', icon: '⚠️', desc: 'Exposed live cables, structural risks', color: 'bg-red-50 text-red-800' },
   ];
 
   return (
@@ -68,7 +70,6 @@ export const LandingPage = () => {
       
       {/* 1. HERO SECTION */}
       <section className="relative pt-12 pb-20 overflow-hidden">
-        {/* Subtle background graphic accents in warm civic palette */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-terracotta-100/40 via-sage/30 to-transparent rounded-full blur-3xl -z-10 pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
@@ -76,22 +77,21 @@ export const LandingPage = () => {
           {/* Top Pill */}
           <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white border border-[#D5DFD1] shadow-warm text-xs font-semibold text-charcoal-700 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-terracotta animate-ping"></span>
-            <span className="text-terracotta-700 font-bold">Multimodal AI + 200m Spatial Triage</span>
+            <span className="text-terracotta-700 font-bold">{t('heroTag')}</span>
             <span className="text-charcoal-400">•</span>
-            <span className="text-forest-800">Bengaluru Civic Pilot</span>
+            <span className="text-forest-800">{t('heroPilot')}</span>
           </div>
 
           {/* Main Title */}
           <div className="space-y-4 max-w-4xl mx-auto">
             <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-charcoal-900 tracking-tight leading-[1.1]">
-              Your City. Your Voice. <br />
+              {t('heroTitle1')} <br />
               <span className="text-terracotta underline decoration-mustard/60 decoration-wavy decoration-2">
-                Real Change.
+                {t('heroTitle2')}
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-charcoal-600 max-w-2xl mx-auto leading-relaxed">
-              Upload a photo of potholes, trash dumps, or water bursts. Gemini Flash analyzes severity, 
-              flags 200-meter duplicate complaints, and coordinates direct municipal remediation on a transparent city board.
+              {t('heroDesc')}
             </p>
           </div>
 
@@ -102,7 +102,7 @@ export const LandingPage = () => {
               className="w-full sm:w-auto flex items-center justify-center space-x-3 px-8 py-4 rounded-2xl bg-terracotta hover:bg-terracotta-600 text-white font-bold text-base shadow-warm-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <Camera className="w-5 h-5" />
-              <span>Report an Issue Now</span>
+              <span>{t('reportNow')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -111,7 +111,7 @@ export const LandingPage = () => {
               className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-8 py-4 rounded-2xl bg-white hover:bg-ivory-100 text-charcoal-800 font-bold text-base border-2 border-[#D5DFD1] shadow-warm transition-all"
             >
               <MapPin className="w-5 h-5 text-forest" />
-              <span>Explore Live City Map</span>
+              <span>{t('exploreLiveMap')}</span>
             </Link>
           </div>
 
@@ -120,45 +120,45 @@ export const LandingPage = () => {
             <div className="bg-white p-5 rounded-2xl border border-[#E9EFE7] shadow-warm text-left space-y-1">
               <div className="flex items-center space-x-2 text-terracotta">
                 <Activity className="w-4 h-4" />
-                <span className="text-xs font-semibold text-charcoal-500 uppercase">Total Reports</span>
+                <span className="text-xs font-semibold text-charcoal-500 uppercase">{t('totalReports')}</span>
               </div>
               <p className="font-display font-extrabold text-3xl text-charcoal-900">
                 {stats.totalComplaints || 42}+
               </p>
-              <p className="text-[11px] text-charcoal-500 font-medium">Logged across Bengaluru wards</p>
+              <p className="text-[11px] text-charcoal-500 font-medium">{t('totalReportsSub')}</p>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-[#E9EFE7] shadow-warm text-left space-y-1">
               <div className="flex items-center space-x-2 text-forest">
                 <CheckCircle2 className="w-4 h-4" />
-                <span className="text-xs font-semibold text-charcoal-500 uppercase">Resolution Rate</span>
+                <span className="text-xs font-semibold text-charcoal-500 uppercase">{t('resolutionRate')}</span>
               </div>
               <p className="font-display font-extrabold text-3xl text-forest-700">
                 {stats.resolutionRate || 72}%
               </p>
-              <p className="text-[11px] text-charcoal-500 font-medium">Verified by photo proof</p>
+              <p className="text-[11px] text-charcoal-500 font-medium">{t('resolutionRateSub')}</p>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-[#E9EFE7] shadow-warm text-left space-y-1">
               <div className="flex items-center space-x-2 text-mustard">
                 <TrendingUp className="w-4 h-4" />
-                <span className="text-xs font-semibold text-charcoal-500 uppercase">Avg Turnaround</span>
+                <span className="text-xs font-semibold text-charcoal-500 uppercase">{t('avgTurnaround')}</span>
               </div>
               <p className="font-display font-extrabold text-3xl text-charcoal-900">
-                {stats.avgResolutionDays || 2.4} <span className="text-base font-semibold text-charcoal-500">days</span>
+                {stats.avgResolutionDays || 2.4} <span className="text-base font-semibold text-charcoal-500">{t('daysUnit')}</span>
               </p>
-              <p className="text-[11px] text-charcoal-500 font-medium">From photo to crew dispatch</p>
+              <p className="text-[11px] text-charcoal-500 font-medium">{t('avgTurnaroundSub')}</p>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-[#E9EFE7] shadow-warm text-left space-y-1">
               <div className="flex items-center space-x-2 text-terracotta-700">
                 <Layers className="w-4 h-4" />
-                <span className="text-xs font-semibold text-charcoal-500 uppercase">Duplicates Unified</span>
+                <span className="text-xs font-semibold text-charcoal-500 uppercase">{t('duplicatesUnified')}</span>
               </div>
               <p className="font-display font-extrabold text-3xl text-charcoal-900">
                 94%
               </p>
-              <p className="text-[11px] text-charcoal-500 font-medium">200m spatial duplicate triage</p>
+              <p className="text-[11px] text-charcoal-500 font-medium">{t('duplicatesUnifiedSub')}</p>
             </div>
           </div>
 
@@ -169,13 +169,13 @@ export const LandingPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-terracotta">
-            Civic Transparency Pipeline
+            {t('pipelineTag')}
           </span>
           <h2 className="font-display font-bold text-3xl sm:text-4xl text-charcoal-900">
-            How JanPulse AI Resolves City Grievances
+            {t('howItWorksTitle')}
           </h2>
           <p className="text-sm sm:text-base text-charcoal-600">
-            A transparent 4-stage pipeline combining Google Gemini multimodal vision with MongoDB 2dsphere proximity triage.
+            {t('howItWorksSubtitle')}
           </p>
         </div>
 
@@ -186,10 +186,10 @@ export const LandingPage = () => {
               01
             </div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              Snap & Geo-Pin
+              {t('step1Title')}
             </h3>
             <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-              Drag and drop an image of the civic issue. Pick the exact GPS spot on our interactive Bengaluru map or let geolocation detect your location.
+              {t('step1Desc')}
             </p>
           </div>
 
@@ -198,10 +198,10 @@ export const LandingPage = () => {
               02
             </div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              Gemini AI Triage
+              {t('step2Title')}
             </h3>
             <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-              Google Gemini Flash multimodal vision inspects the photo, assigns a 1–10 severity score, extracts defects, and routes to the right municipal department.
+              {t('step2Desc')}
             </p>
           </div>
 
@@ -210,10 +210,10 @@ export const LandingPage = () => {
               03
             </div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              200m Duplicate Check
+              {t('step3Title')}
             </h3>
             <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-              MongoDB 2dsphere indexing identifies nearby open complaints. Citizens can upvote the existing ticket, boosting municipal urgency without splitting records.
+              {t('step3Desc')}
             </p>
           </div>
 
@@ -222,10 +222,10 @@ export const LandingPage = () => {
               04
             </div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              Verified Resolution
+              {t('step4Title')}
             </h3>
             <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-              Municipal engineering units execute repairs. Supervisors upload photographic resolution proof and update the public transparency dashboard.
+              {t('step4Desc')}
             </p>
           </div>
 
@@ -238,17 +238,17 @@ export const LandingPage = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-forest-800">
-                Municipal Sectors
+                {t('categoriesTitle')}
               </span>
               <h2 className="font-display font-bold text-2xl sm:text-3xl text-charcoal-900 mt-1">
-                Supported Civic Categories
+                {t('categoriesTitle')}
               </h2>
             </div>
             <Link
               to="/report"
               className="inline-flex items-center space-x-1.5 text-xs font-bold text-terracotta hover:text-terracotta-700"
             >
-              <span>Submit a complaint for any category</span>
+              <span>{t('categoriesSub')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -264,7 +264,7 @@ export const LandingPage = () => {
                 </div>
                 <div>
                   <h4 className="font-display font-bold text-base text-charcoal-900">
-                    {cat.name}
+                    {t(cat.key)}
                   </h4>
                   <p className="text-xs text-charcoal-600 mt-0.5">
                     {cat.desc}
@@ -281,17 +281,17 @@ export const LandingPage = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-terracotta">
-              Live Field Reports
+              {t('recentTag')}
             </span>
             <h2 className="font-display font-bold text-2xl sm:text-3xl text-charcoal-900 mt-1">
-              Recent Civic Grievances in Bengaluru
+              {t('recentTitle')}
             </h2>
           </div>
           <Link
             to="/map"
             className="inline-flex items-center space-x-2 text-sm font-bold text-forest-700 hover:text-forest-900"
           >
-            <span>View All on Interactive Map</span>
+            <span>{t('viewAllMap')}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -302,7 +302,6 @@ export const LandingPage = () => {
               key={item._id || item.complaintId}
               className="bg-white rounded-3xl overflow-hidden border border-[#E9EFE7] shadow-warm hover:shadow-warm-lg transition-all flex flex-col group"
             >
-              {/* Photo */}
               <div className="relative h-44 bg-charcoal-100 overflow-hidden">
                 <img
                   src={item.imageUrl}
@@ -320,12 +319,11 @@ export const LandingPage = () => {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px] font-mono text-charcoal-500">
                     <span>#{item.complaintId}</span>
-                    <span>{item.category}</span>
+                    <span>{t(item.category) || item.category}</span>
                   </div>
 
                   <h3 className="font-display font-bold text-sm text-charcoal-900 line-clamp-2 leading-snug">
@@ -347,7 +345,7 @@ export const LandingPage = () => {
                     to={`/complaints/${item._id}`}
                     className="font-bold text-forest hover:text-forest-800 flex items-center space-x-1"
                   >
-                    <span>Inspect</span>
+                    <span>{t('inspect')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -362,26 +360,26 @@ export const LandingPage = () => {
         <div className="relative rounded-3xl bg-gradient-to-br from-terracotta to-terracotta-700 text-white p-8 sm:p-14 overflow-hidden shadow-warm-xl">
           <div className="max-w-2xl space-y-4 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider bg-white/20 text-white px-3 py-1 rounded-full">
-              Democratizing Civic Redressal
+              {t('ctaTag')}
             </span>
             <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tight leading-tight">
-              Spot a civic hazard on your street? Report it in 30 seconds.
+              {t('ctaTitle')}
             </h2>
             <p className="text-white/90 text-sm sm:text-base leading-relaxed">
-              No endless municipal helpline queues. Our AI directly routes your report to BBMP engineers with exact coordinates and urgency triage.
+              {t('ctaDesc')}
             </p>
             <div className="pt-2 flex flex-wrap gap-3">
               <Link
                 to="/report"
                 className="px-6 py-3 rounded-2xl bg-white hover:bg-ivory-100 text-terracotta-700 font-bold text-sm shadow-warm transition-transform transform hover:-translate-y-0.5"
               >
-                Launch Issue Reporter
+                {t('ctaLaunch')}
               </Link>
               <Link
                 to="/dashboard"
                 className="px-6 py-3 rounded-2xl bg-terracotta-800 hover:bg-terracotta-900 text-white font-bold text-sm border border-white/20 transition-colors"
               >
-                View Transparency Metrics
+                {t('ctaMetrics')}
               </Link>
             </div>
           </div>

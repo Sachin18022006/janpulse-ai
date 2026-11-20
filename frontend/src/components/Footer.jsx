@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Sparkles, MapPin, Heart, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { CheckCircle2 } from 'lucide-react';
 
 export const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-[#E9EFE7] border-t border-[#D5DFD1] mt-24 text-charcoal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -19,43 +22,43 @@ export const Footer = () => {
               </span>
             </div>
             <p className="text-sm text-charcoal-600 leading-relaxed">
-              Transparent civic grievance reporting & geospatial duplicate triage board. Empowering citizens and municipal teams with multimodal AI.
+              {t('brandSubtitle')} — {t('heroDesc').slice(0, 95)}...
             </p>
             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-forest-100 text-forest-800 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-forest animate-pulse"></span>
-              <span>Pilot City: Bengaluru (BBMP)</span>
+              <span>{t('heroPilot')}: Bengaluru (BBMP)</span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
             <h4 className="font-display font-bold text-sm uppercase tracking-wider text-charcoal-800 mb-4">
-              Civic Platform
+              {t('home')}
             </h4>
             <ul className="space-y-2.5 text-sm text-charcoal-600">
               <li>
                 <Link to="/map" className="hover:text-terracotta transition-colors">
-                  Live Grievance Map
+                  {t('exploreMap')}
                 </Link>
               </li>
               <li>
                 <Link to="/report" className="hover:text-terracotta transition-colors">
-                  Report Civic Issue
+                  {t('reportIssue')}
                 </Link>
               </li>
               <li>
                 <Link to="/dashboard" className="hover:text-terracotta transition-colors">
-                  Public Transparency Board
+                  {t('transparency')}
                 </Link>
               </li>
               <li>
                 <Link to="/track" className="hover:text-terracotta transition-colors">
-                  Track Complaint Status
+                  {t('trackId')}
                 </Link>
               </li>
               <li>
                 <Link to="/admin" className="hover:text-terracotta transition-colors">
-                  Municipal Admin Portal
+                  {t('adminTriage')}
                 </Link>
               </li>
             </ul>
@@ -64,28 +67,28 @@ export const Footer = () => {
           {/* Civic Categories */}
           <div>
             <h4 className="font-display font-bold text-sm uppercase tracking-wider text-charcoal-800 mb-4">
-              Focus Sectors
+              {t('categoriesTitle')}
             </h4>
             <ul className="space-y-2.5 text-sm text-charcoal-600">
               <li className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-terracotta"></span>
-                <span>Potholes & Road Damage</span>
+                <span>{t('Road Damage')}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-mustard"></span>
-                <span>Garbage & Solid Waste</span>
+                <span>{t('Garbage')}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-forest"></span>
-                <span>Water Supply & Pipeline Leakage</span>
+                <span>{t('Water Leakage')}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-charcoal-400"></span>
-                <span>Streetlights & Electrical Hazards</span>
+                <span>{t('Streetlight')}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-terracotta-700"></span>
-                <span>Stormwater Drains & Manholes</span>
+                <span>{t('Drainage')}</span>
               </li>
             </ul>
           </div>
@@ -93,10 +96,10 @@ export const Footer = () => {
           {/* AI & Tech Pillars */}
           <div className="space-y-4">
             <h4 className="font-display font-bold text-sm uppercase tracking-wider text-charcoal-800">
-              AI & Tech Architecture
+              {t('pipelineTag')}
             </h4>
             <p className="text-xs text-charcoal-600 leading-relaxed">
-              Powered by Google Gemini Flash multimodal computer vision, MongoDB 2dsphere 200m spatial duplicate filtering, and Leaflet interactive cartography.
+              Google Gemini Flash multimodal vision, MongoDB 2dsphere 200m spatial clustering, and Leaflet interactive cartography.
             </p>
             <div className="p-3.5 rounded-2xl bg-white border border-[#D5DFD1] text-xs space-y-1">
               <div className="flex items-center text-forest font-semibold space-x-1">
@@ -104,7 +107,7 @@ export const Footer = () => {
                 <span>Zero Fabricated Data</span>
               </div>
               <p className="text-charcoal-500 text-[11px]">
-                Demo records are explicitly labeled. Verified civic data pipeline.
+                Bengaluru Civic Redressal Pipeline.
               </p>
             </div>
           </div>

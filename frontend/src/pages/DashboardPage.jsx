@@ -22,19 +22,20 @@ import {
   TrendingUp, 
   Building2, 
   Layers, 
-  ShieldCheck,
+  ShieldCheck, 
   Calendar,
   FileDown,
   Printer
 } from 'lucide-react';
 import { dashboardAPI } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 export const DashboardPage = () => {
+  const { t } = useLanguage();
   const [stats, setStats] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Civic color palette for charts
   const PALETTE = ['#D66A45', '#356B52', '#E5B84B', '#96A88F', '#BF522D', '#2C5A44', '#79331B'];
 
   useEffect(() => {
@@ -68,17 +69,17 @@ export const DashboardPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Page Header with Export / Print Actions */}
+      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E9EFE7] pb-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-terracotta">
-            Open Governance & Accountability
+            {t('openGovTag')}
           </span>
           <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-charcoal-900 mt-1">
-            Public Transparency & Triage Dashboard
+            {t('dashboardTitle')}
           </h1>
           <p className="text-xs sm:text-sm text-charcoal-600 mt-1">
-            Real-time metrics on civic grievance resolution rates, Gemini AI severity categorization, and municipal department responsiveness.
+            {t('dashboardSubtitle')}
           </p>
         </div>
 
@@ -88,7 +89,7 @@ export const DashboardPage = () => {
             className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-white border border-[#D5DFD1] text-xs font-bold text-charcoal-700 hover:bg-sage/40 transition-colors shadow-warm"
           >
             <Printer className="w-4 h-4 text-forest" />
-            <span>Print Ward Audit Report</span>
+            <span>{t('printAuditBtn')}</span>
           </button>
         </div>
       </div>
@@ -99,7 +100,7 @@ export const DashboardPage = () => {
         <div className="bg-white p-6 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500">
-              Total Grievances
+              {t('kpiTotal')}
             </span>
             <div className="w-8 h-8 rounded-xl bg-terracotta-100 text-terracotta flex items-center justify-center">
               <Activity className="w-4 h-4" />
@@ -109,14 +110,14 @@ export const DashboardPage = () => {
             {stats?.totalComplaints || 42}
           </p>
           <p className="text-xs text-charcoal-500 font-medium">
-            Reported across Bengaluru wards
+            {t('totalReportsSub')}
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500">
-              Resolved Cases
+              {t('kpiResolved')}
             </span>
             <div className="w-8 h-8 rounded-xl bg-forest-100 text-forest flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
@@ -131,31 +132,31 @@ export const DashboardPage = () => {
             </span>
           </div>
           <p className="text-xs text-charcoal-500 font-medium">
-            Photo verified resolution proof
+            {t('resolutionRateSub')}
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500">
-              Avg Turnaround
+              {t('kpiAvg')}
             </span>
             <div className="w-8 h-8 rounded-xl bg-mustard-100 text-mustard-800 flex items-center justify-center">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <p className="font-display font-extrabold text-3xl text-charcoal-900">
-            {stats?.avgResolutionDays || 2.4} <span className="text-base font-semibold text-charcoal-500">days</span>
+            {stats?.avgResolutionDays || 2.4} <span className="text-base font-semibold text-charcoal-500">{t('daysUnit')}</span>
           </p>
           <p className="text-xs text-charcoal-500 font-medium">
-            From citizen upload to fix
+            {t('avgTurnaroundSub')}
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500">
-              Critical Unresolved
+              {t('kpiCritical')}
             </span>
             <div className="w-8 h-8 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
               <AlertTriangle className="w-4 h-4" />
@@ -165,7 +166,7 @@ export const DashboardPage = () => {
             {stats?.criticalComplaints || 3}
           </p>
           <p className="text-xs text-charcoal-500 font-medium">
-            Severity ≥ 8 requiring rapid response
+            {t('kpiCriticalSub')}
           </p>
         </div>
 
@@ -178,10 +179,10 @@ export const DashboardPage = () => {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-4">
           <div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              Grievance Category Breakdown
+              {t('chartCategoryTitle')}
             </h3>
             <p className="text-xs text-charcoal-500">
-              Distribution of civic issues reported across focus sectors
+              {t('categoriesSub')}
             </p>
           </div>
 
@@ -210,7 +211,7 @@ export const DashboardPage = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value, name) => [`${value} reports`, name]}
+                  formatter={(value, name) => [`${value} reports`, t(name) || name]}
                   contentStyle={{
                     backgroundColor: '#F8F6F0',
                     borderRadius: '12px',
@@ -223,6 +224,7 @@ export const DashboardPage = () => {
                   verticalAlign="bottom"
                   height={36}
                   iconType="circle"
+                  formatter={(value) => t(value) || value}
                   wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
                 />
               </PieChart>
@@ -234,10 +236,10 @@ export const DashboardPage = () => {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-4">
           <div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              AI Severity Score Distribution
+              {t('chartSeverityTitle')}
             </h3>
             <p className="text-xs text-charcoal-500">
-              Grievances graded 1 to 10 by Gemini Flash multimodal analysis
+              {t('geoIntelTag')}
             </p>
           </div>
 
@@ -282,10 +284,10 @@ export const DashboardPage = () => {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-4">
           <div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              Monthly Complaint Inflow vs Resolutions
+              {t('chartMonthlyTitle')}
             </h3>
             <p className="text-xs text-charcoal-500">
-              Six-month velocity tracking municipal remediation performance
+              {t('resolutionRateSub')}
             </p>
           </div>
 
@@ -352,10 +354,10 @@ export const DashboardPage = () => {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#E9EFE7] shadow-warm space-y-4">
           <div>
             <h3 className="font-display font-bold text-lg text-charcoal-900">
-              Department Workload & Active Queue
+              {t('chartDeptTitle')}
             </h3>
             <p className="text-xs text-charcoal-500">
-              Active vs resolved caseload by municipal division
+              {t('adminTag')}
             </p>
           </div>
 
