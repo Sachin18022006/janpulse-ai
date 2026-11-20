@@ -5,6 +5,8 @@
 
 ---
 
+Backend - https://janpulse-ai.onrender.com/ 
+Frontend - https://frontend-blush-kappa-11.vercel.app/
 
 ## 🛠️ Complete Tech Stack
 
